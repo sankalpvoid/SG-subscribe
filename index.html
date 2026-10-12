@@ -54,7 +54,7 @@
     display: flex; align-items: center; gap: 12px;
     opacity: 0; transform: translateY(7px);
   }
-  .visible .step.like { animation: reveal 2.45s ease 0s both; }
+  .visible .step.like { animation: none; opacity: 1; transform: none; }
   .visible .step.subscribe { animation: reveal 2.45s ease 2.25s both; }
   .visible .step.share { animation: reveal 2.6s ease 4.5s both; }
   .icon {
@@ -121,24 +121,12 @@
   <script>
     (() => {
       const stage = document.querySelector('.stage');
-      const SHOW_AFTER_MS = 2 * 60 * 1000;
-      const REPEAT_EVERY_MS = 12 * 60 * 1000;
-      const VISIBLE_FOR_MS = 9 * 1000;
+      const POSITIONING_DURATION_MS = 60 * 1000;
 
-      function showOverlay() {
-        // Restart the CTA sequence cleanly on each scheduled appearance.
-        stage.classList.remove('visible');
-        void stage.offsetWidth;
-        stage.classList.add('visible');
-        window.setTimeout(() => stage.classList.remove('visible'), VISIBLE_FOR_MS);
-      }
-
-      // First appearance 2 minutes after the OBS browser source loads,
-      // then every 12 minutes from that first appearance.
-      window.setTimeout(() => {
-        showOverlay();
-        window.setInterval(showOverlay, REPEAT_EVERY_MS);
-      }, SHOW_AFTER_MS);
+      // Temporary OBS positioning mode: show the LIKE state immediately
+      // and keep it still for one minute, then hide it.
+      stage.classList.add('visible');
+      window.setTimeout(() => stage.classList.remove('visible'), POSITIONING_DURATION_MS);
     })();
   </script>
 </body>
