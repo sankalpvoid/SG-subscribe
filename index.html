@@ -124,6 +124,7 @@
       const SHOW_AFTER_MS = 2 * 60 * 1000;
       const REPEAT_EVERY_MS = 12 * 60 * 1000;
       const VISIBLE_FOR_MS = 9 * 1000;
+      const PREVIEW_MODE = new URLSearchParams(window.location.search).has('preview');
 
       function showOverlay() {
         // Restart the three-step sequence cleanly on each appearance.
@@ -133,12 +134,18 @@
         window.setTimeout(() => stage.classList.remove('visible'), VISIBLE_FOR_MS);
       }
 
-      // First appearance 2 minutes after the OBS browser source loads,
-      // then every 12 minutes from that first appearance.
-      window.setTimeout(() => {
+      if (PREVIEW_MODE) {
+        // Browser preview: play immediately and repeat so the transparent
+        // overlay can be inspected outside OBS. The OBS URL remains unchanged.
         showOverlay();
-        window.setInterval(showOverlay, REPEAT_EVERY_MS);
-      }, SHOW_AFTER_MS);
+        window.setInterval(showOverlay, VISIBLE_FOR_MS);
+      } else {
+        // OBS mode: first appearance 2 minutes after load, then every 12 minutes.
+        window.setTimeout(() => {
+          showOverlay();
+          window.setInterval(showOverlay, REPEAT_EVERY_MS);
+        }, SHOW_AFTER_MS);
+      }
     })();
   </script>
 </body>
