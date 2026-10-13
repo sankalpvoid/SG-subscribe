@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stream CTA — Like, Subscribe, Share</title>
+<title>Stream CTA — Like, Subscribe, Notifications</title>
 <style>
   :root {
     --gold: #C5A866;
@@ -54,9 +54,9 @@
     display: flex; align-items: center; gap: 12px;
     opacity: 0; transform: translateY(7px);
   }
-  .visible .step.like { animation: none; opacity: 1; transform: none; }
+  .visible .step.like { animation: reveal 2.45s ease 0s both; }
   .visible .step.subscribe { animation: reveal 2.45s ease 2.25s both; }
-  .visible .step.share { animation: reveal 2.6s ease 4.5s both; }
+  .visible .step.notification { animation: reveal 2.6s ease 4.5s both; }
   .icon {
     width: 36px; height: 36px; flex: 0 0 36px;
     display: grid; place-items: center; border-radius: 50%;
@@ -99,7 +99,7 @@
 </style>
 </head>
 <body>
-  <main class="stage" aria-label="Like, subscribe, and share call to action">
+  <main class="stage" aria-label="Like, subscribe, and turn on notifications">
     <section class="capsule">
       <div class="action">
         <div class="step like">
@@ -110,9 +110,9 @@
           <div class="icon"><svg viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M8.8 5.6c0-.9 1-1.4 1.8-.9l8.1 5.4a1.1 1.1 0 0 1 0 1.8l-8.1 5.4c-.8.5-1.8 0-1.8-.9V5.6Z"/></svg></div>
           <div class="copy"><div class="label">SUBSCRIBE</div><div class="subline">Join the community</div></div>
         </div>
-        <div class="step share">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="18" cy="5" r="2.5" fill="#F0DCA4" stroke="#C5A866" stroke-width="1.2"/><circle cx="6" cy="12" r="2.5" fill="#F0DCA4" stroke="#C5A866" stroke-width="1.2"/><circle cx="18" cy="19" r="2.5" fill="#F0DCA4" stroke="#C5A866" stroke-width="1.2"/><path d="m8.3 10.8 7.4-4.5M8.3 13.2l7.4 4.5" stroke="#F0DCA4" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <div class="copy"><div class="label">SHARE</div><div class="subline">Pass it along</div></div>
+        <div class="step notification">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" fill="#F0DCA4" stroke="#C5A866" stroke-width="1.25" stroke-linejoin="round"/><path d="M9.5 21h5" stroke="#F0DCA4" stroke-width="1.8" stroke-linecap="round"/><path d="M19.5 3.5 21 2m-1 5h2" stroke="#F0DCA4" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="copy"><div class="label">NOTIFICATIONS</div><div class="subline">Turn on the bell</div></div>
         </div>
       </div>
       <div class="end-cap"></div><div class="glint"></div>
@@ -121,12 +121,24 @@
   <script>
     (() => {
       const stage = document.querySelector('.stage');
-      const POSITIONING_DURATION_MS = 60 * 1000;
+      const SHOW_AFTER_MS = 2 * 60 * 1000;
+      const REPEAT_EVERY_MS = 12 * 60 * 1000;
+      const VISIBLE_FOR_MS = 9 * 1000;
 
-      // Temporary OBS positioning mode: show the LIKE state immediately
-      // and keep it still for one minute, then hide it.
-      stage.classList.add('visible');
-      window.setTimeout(() => stage.classList.remove('visible'), POSITIONING_DURATION_MS);
+      function showOverlay() {
+        // Restart the three-step sequence cleanly on each appearance.
+        stage.classList.remove('visible');
+        void stage.offsetWidth;
+        stage.classList.add('visible');
+        window.setTimeout(() => stage.classList.remove('visible'), VISIBLE_FOR_MS);
+      }
+
+      // First appearance 2 minutes after the OBS browser source loads,
+      // then every 12 minutes from that first appearance.
+      window.setTimeout(() => {
+        showOverlay();
+        window.setInterval(showOverlay, REPEAT_EVERY_MS);
+      }, SHOW_AFTER_MS);
     })();
   </script>
 </body>
